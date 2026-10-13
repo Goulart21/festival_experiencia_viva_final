@@ -45,7 +45,7 @@ class ParticipanteService
         return 'ERRO_CADASTRAR';
     }
 
-    public function listarParticipante(): array
+    public function listarParticipantes(): array
     {
 
         $sql = "SELECT * FROM participantes ORDER BY nome_participante";
