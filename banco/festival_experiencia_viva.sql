@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS participantes (
     data_cadastro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT uq_participantes_email UNIQUE (email),
-    CONSTRAINT uq_participantes_telefone UNIQUE (telefone)
+    
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS atividades (
