@@ -93,7 +93,7 @@ class ParticipanteService
     public function excluirParticipante(int $id_participante): string
     {
 
-        $sql = "DELETE participantes WHERE id_participante = :id";
+        $sql = "DELETE FROM participantes WHERE id_participante = :id";
 
         $stmt = $this->pdo->prepare($sql);
 
