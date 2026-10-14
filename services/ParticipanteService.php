@@ -74,6 +74,21 @@ class ParticipanteService
     public function atualizarParticipante(int $id_participante, Participante $participante): string
     {
 
+
+        $sql = "SELECT * FROM participantes WHERE id_participante = :id";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        $stmt->execute([
+            ':id' => $id_participante
+        ]);
+
+        if ($stmt->fetch(PDO::FETCH_ASSOC) === false) {
+
+            return 'NAO_ENCONTRADO';
+        }
+
+
         $sql = "UPDATE participantes SET nome_participante = :nome_participante, email = :email, telefone = :telefone WHERE id_participante = :id";
 
         $stmt = $this->pdo->prepare($sql);
