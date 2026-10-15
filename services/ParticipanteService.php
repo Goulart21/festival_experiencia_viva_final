@@ -88,6 +88,23 @@ class ParticipanteService
             return 'NAO_ENCONTRADO';
         }
 
+        $sql = "SELECT COUNT(*)
+        FROM participantes
+        WHERE email = :email
+        AND id_participante <> :id";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        $stmt->execute([
+            ':email' => $participante->getEmail(),
+            ':id' => $participante->getIdParticipante()
+        ]);
+
+        if ($stmt->fetchColumn() > 0) {
+
+            return 'EMAIL_DUPLICADO';
+        }
+
 
         $sql = "UPDATE participantes SET nome_participante = :nome_participante, email = :email, telefone = :telefone WHERE id_participante = :id";
 
