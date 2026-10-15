@@ -121,6 +121,17 @@ class ParticipanteController
 
             return;
         }
+
+        elseif($resultado === 'EMAIL_DUPLICADO'){
+
+            http_response_code(409);
+
+            echo json_encode([
+                'mensagem' => 'Email já cadastrado'
+            ]);
+
+            return;
+        }
     }
 
     public function excluirParticipante(int $id_participante): void
