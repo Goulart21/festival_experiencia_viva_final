@@ -1,0 +1,106 @@
+
+<?php
+
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../models/Atividade.php';
+
+class AtividadeService
+{
+
+    private PDO $pdo;
+
+    public function __construct(PDO $pdo)
+    {
+        $this->pdo = $pdo;
+    }
+
+    public function cadastrarAtividade(Atividade $atividade): string
+    {
+
+        $capacidade = $atividade->getCapacidade();
+        if ($capacidade <= 0) {
+
+            return 'CAPACIDADE_INVALIDA';
+        }
+
+        $sql = "INSERT INTO atividades (nome_atividade, descricao, data_atividade, hora_inicio, hora_fim, local_atividade, capacidade) VALUES 
+        (:nome_atividade, :descricao, :data_atividade, :hora_inicio, :hora_fim, :local_atividade, :capacidade)";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        if ($stmt->execute([
+            ':nome_atividade' => $atividade->getNomeAtividade(),
+            ':descricao' => $atividade->getDescricao(),
+            ':data_atividade' => $atividade->getDataAtividade(),
+            ':hora_inicio' => $atividade->getHoraInicio(),
+            ':hora_fim' => $atividade->getHoraFim(),
+            ':local_atividade' => $atividade->getCapacidade()
+        ])) {
+            return 'CADASTRADA';
+        }
+
+        return 'ERRO_CADASTRO';
+    }
+
+    public function listarAtividade(): array
+    {
+
+        $sql = "SELECT * FROM atividades";
+
+        $stmt = $this->pdo->query($sql);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function buscarAtividadePorId(int $id_atividade):  ?array
+    {
+
+        $sql = "SELECT * FROM atividades WHERE id_atividade = :id";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        $stmt->execute([
+            ':id' => $id_atividade
+        ]);
+
+        $atividadeId  = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $atividadeId ?: null;
+    }
+
+    public function atualizarAtividade(int $id_atividade, Atividade $atividade): string
+    {
+
+        $sql = "SELECT * FROM atividdades WHERE id_atividade = :id";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        $stmt->execute([
+            ':id' => $id_atividade
+        ]);
+
+        if ($stmt->fetch(PDO::FETCH_ASSOC) == NULL) {
+
+            return 'NAO_ENCONTRADO';
+        }
+
+        $sql = "UPDATE atividades SET nome_atividade = :nome_atividade, descricao = :descricao, data_atividade = :data_atividade, hora_inicio = :hora_inicio, hora_fim = :hora_fim, loca_atividade = :local_atividade, capacidade = :capacidade WHERE id_atividade = :id";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        if ($stmt->execute([
+            ':nome_atividade' => $atividade->getNomeAtividade(),
+            ':descricao' => $atividade->getDescricao(),
+            ':data_atividade' => $atividade->getDataAtividade(),
+            ':hora_inicio' => $atividade->getHoraInicio(),
+            ':hora_fim' => $atividade->getHoraFim(),
+            ':local_atividade' => $atividade->getLocalAtividade(),
+            ':capacidade' => $atividade->getCapacidade()
+        ])) {
+
+            return 'ATUALIZADA';
+        }
+
+        return 'ERRO_ATUALIZAR';
+    }
+}
