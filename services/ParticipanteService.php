@@ -97,7 +97,7 @@ class ParticipanteService
 
         $stmt->execute([
             ':email' => $participante->getEmail(),
-            ':id' => $participante->getIdParticipante()
+            ':id' => $id_participante 
         ]);
 
         if ($stmt->fetchColumn() > 0) {
