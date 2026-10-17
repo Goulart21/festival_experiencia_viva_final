@@ -43,7 +43,7 @@ class AtividadeService
         return 'ERRO_CADASTRO';
     }
 
-    public function listarAtividade(): array
+    public function listarAtividades(): array
     {
 
         $sql = "SELECT * FROM atividades";
