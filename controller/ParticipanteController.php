@@ -25,7 +25,7 @@ class ParticipanteController
         //informa que a requisição foi conclúida com sucesso
         http_response_code(200);
         //converte o array PHP em JSON e envia o conteudo na resposta HTTP
-        echo json_encode($participantes);
+        echo json_encode($participantes, JSON_UNESCAPED_UNICODE);
     }
 
     public function buscarParticipantePorId(int $id_participante): void
@@ -39,7 +39,9 @@ class ParticipanteController
 
             http_response_code(404);
 
-            echo json_encode("Participante não encontrado");
+            echo json_encode([
+                'mensagem' => 'Atividade não encontrada'
+            ], JSON_UNESCAPED_UNICODE);
 
             return;
         }
@@ -65,7 +67,7 @@ class ParticipanteController
 
             echo json_encode([
                 'mensagem' => 'Email já cadastrado'
-            ]);
+            ], JSON_UNESCAPED_UNICODE);
             return;
         } elseif ($resultado === 'ERRO_CADASTRAR') {
 
@@ -73,7 +75,7 @@ class ParticipanteController
 
             echo json_encode([
                 'mensagem' => 'Erro ao cadastrar'
-            ]);
+            ], JSON_UNESCAPED_UNICODE);
 
             return;
         } elseif ($resultado === 'SUCESSO') {
@@ -82,7 +84,7 @@ class ParticipanteController
 
             echo json_encode([
                 'mensagem' => 'Participante cadastrado com sucesso'
-            ]);
+            ], JSON_UNESCAPED_UNICODE);
         }
     }
 
@@ -99,7 +101,7 @@ class ParticipanteController
 
             echo json_encode([
                 'mensagem' => 'Participante atualizado'
-            ]);
+            ], JSON_UNESCAPED_UNICODE);
 
             return;
         } elseif ($resultado === 'NAO_ENCONTRADO') {
@@ -117,18 +119,16 @@ class ParticipanteController
 
             echo json_encode([
                 'mensagem' => 'Erro ao atualizar'
-            ]);
+            ], JSON_UNESCAPED_UNICODE);
 
             return;
-        }
-
-        elseif($resultado === 'EMAIL_DUPLICADO'){
+        } elseif ($resultado === 'EMAIL_DUPLICADO') {
 
             http_response_code(409);
 
             echo json_encode([
                 'mensagem' => 'Email já cadastrado'
-            ]);
+            ], JSON_UNESCAPED_UNICODE);
 
             return;
         }
@@ -147,7 +147,7 @@ class ParticipanteController
 
             echo json_encode([
                 'mensagem' => 'Participante excluido'
-            ]);
+            ], JSON_UNESCAPED_UNICODE);
 
             return;
         } elseif ($resultado === 'NAO_ENCONTRADO') {
@@ -165,7 +165,7 @@ class ParticipanteController
 
             echo json_encode([
                 'mensagem' => 'Erro ao excluir participante'
-            ]);
+            ], JSON_UNESCAPED_UNICODE);
 
             return;
         }
