@@ -34,7 +34,8 @@ class AtividadeService
             ':data_atividade' => $atividade->getDataAtividade(),
             ':hora_inicio' => $atividade->getHoraInicio(),
             ':hora_fim' => $atividade->getHoraFim(),
-            ':local_atividade' => $atividade->getCapacidade()
+            ':local_atividade' => $atividade->getLocalAtividade(),
+            ':capacidade' => $atividade->getCapacidade()
         ])) {
             return 'CADASTRADA';
         }
