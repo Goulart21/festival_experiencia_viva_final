@@ -107,6 +107,8 @@ class InscricaoController
 
         $resultado = $this->inscricaoService->cancelarInscricao($id_inscricao);
 
+        header('Content-Type: application/json; charset=utf-8');
+
         if ($resultado === 'NAO_ENCONTRADO') {
 
             http_response_code(404);
