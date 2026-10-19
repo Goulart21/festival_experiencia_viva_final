@@ -36,7 +36,7 @@ function registrarRotasInscricoes(PDO $pdo): void
         $inscricaoController->buscarInscricaoPorId($id);
         return;
     }
-    
+
     if ($metodo === 'POST' && $caminho === 'cadastrar_inscricao') {
 
         header('Content-Type: application/json; charset=utf-8');
@@ -67,6 +67,35 @@ function registrarRotasInscricoes(PDO $pdo): void
         );
 
         $inscricaoController->cadastrarInscricao($inscricao);
+
+        return;
+    }
+
+    if ($metodo === 'PUT' && $caminho === 'cancelar_inscricao') {
+
+        header('Content-Type: application/json; charset=utf-8');
+
+        $dados = json_decode(file_get_contents('php://input'), true);
+
+        if (
+            !is_array($dados) ||
+            !isset($dados['id_inscricao']) ||
+            !is_int($dados['id_inscricao']) ||
+            $dados['id_inscricao'] <= 0
+        ) {
+
+            http_response_code(400);
+
+            echo json_encode([
+                'mensagem' => 'ID inválido. Informe um inteiro positivo.'
+            ], JSON_UNESCAPED_UNICODE);
+
+            return;
+        }
+
+        $id = $dados['id_inscricao'];
+
+        $inscricaoController->cancelarInscricao($id);
 
         return;
     }
