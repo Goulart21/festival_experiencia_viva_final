@@ -94,7 +94,56 @@ class InscricaoController
 
             return;
         }
-        
+
+        http_response_code(500);
+
+        echo json_encode([
+            'mensagem' => 'Erro interno ao processar a inscrição'
+        ], JSON_UNESCAPED_UNICODE);
+    }
+
+    public function cancelarInscricao(int $id_inscricao): void
+    {
+
+        $resultado = $this->inscricaoService->cancelarInscricao($id_inscricao);
+
+        if ($resultado === 'NAO_ENCONTRADO') {
+
+            http_response_code(404);
+
+            echo json_encode([
+                'mensagem' => 'Inscricao não encontrada'
+            ], JSON_UNESCAPED_UNICODE);
+
+            return;
+        } elseif ($resultado === 'JA_CANCELADA') {
+
+            http_response_code(409);
+
+            echo json_encode([
+                'mensagem' => 'Inscrição já cancelada'
+            ], JSON_UNESCAPED_UNICODE);
+            return;
+        } elseif ($resultado === 'CANCELADA') {
+
+            http_response_code(200);
+
+            echo json_encode([
+                'mensagem' => 'Inscrição cancelada'
+            ], JSON_UNESCAPED_UNICODE);
+
+            return;
+        } elseif ($resultado === 'ERRO_CANCELAR') {
+
+            http_response_code(500);
+
+            echo json_encode([
+                'mensagem' => 'Erro ao cancelar'
+            ], JSON_UNESCAPED_UNICODE);
+
+            return;
+        }
+
         http_response_code(500);
 
         echo json_encode([
