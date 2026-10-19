@@ -24,6 +24,28 @@ class InscricaoController
         echo json_encode($inscricoes, JSON_UNESCAPED_UNICODE);
     }
 
+
+    public function buscarInscricaoPorId(int $id_inscricao): void
+    {
+        $resultado = $this->inscricaoService->buscarInscricaoPorId($id_inscricao);
+
+        header('Content-Type: application/json; charset=utf-8');
+
+        if ($resultado === null) {
+
+            http_response_code(404);
+
+            echo json_encode([
+                'mensagem' => 'Inscrição não encontrada'
+            ], JSON_UNESCAPED_UNICODE);
+
+            return;
+        }
+
+        http_response_code(200);
+
+        echo json_encode($resultado, JSON_UNESCAPED_UNICODE);
+    }
     public function cadastrarInscricao(Inscricao $inscricao): void
     {
         $resultado = $this->inscricaoService->cadastrarInscricao($inscricao);
