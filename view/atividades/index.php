@@ -81,6 +81,36 @@
             <p>Consulte as atividades cadastras no festival</p>
         </section>
 
+        <?php $statusCadastro = $_GET['status'] ?? ''; ?>
+
+        <?php if ($statusCadastro === 'cadastrada'): ?>
+            <div class="alert alert-success" role="alert">
+                Atividade cadastrada com sucesso!
+            </div>
+
+        <?php elseif ($statusCadastro === 'atualizado'): ?>
+            <div class="alert alert-success" role="alert">
+                Atividade atualizada com sucesso!
+            </div>
+
+        <?php elseif ($statusCadastro === 'erro_cadastro'): ?>
+            <div class="alert alert-danger" role="alert">
+                Não foi possível cadastrar a atividade.
+            </div>
+
+        <?php elseif ($statusCadastro === 'erro_atualizar'): ?>
+            <div class="alert alert-danger" role="alert">
+                Não foi possível atualizar a atividade.
+            </div>
+
+        <?php elseif ($statusCadastro === 'excluido'): ?>
+            <div class="alert alert-success" role="alert">
+                Atividade excluida 
+            </div>
+        <?php endif; ?>
+
+        <?php $modoEdicao = $atividadeEdicao !== null; ?>
+
         <section class="card shadow-sm mb-4" aria-labelledby="tituloCadastro">
 
             <div class="card-body p-4">
@@ -91,39 +121,61 @@
             </div>
 
 
-            <form action="POST" class="p-4">
+            <form method="POST" class="p-4" action="<?= $modoEdicao ? '?pagina=atividades&editar=' . (int) ($atividadeEdicao['id_atividade'] ?? '')
+                                                        : '?pagina=atividades' ?>">
 
                 <div class="row g-3">
 
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label for="nome_atividade" class="form-label">Nome Atividade</label>
-                        <input type="text" class="form-control" id="nome_atividade" name="nome_participante" required>
+                        <input type="text" class="form-control" id="nome_atividade" name="nome_atividade" value="<?= htmlspecialchars((string) ($atividadeEdicao['nome_atividade'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" required>
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label for="descricao" class="form-label">Descrição</label>
-                        <input type="text" class="form-control" id="descricao" name="descricao" required>
+                        <input type="text" class="form-control" id="descricao" name="descricao" value="<?= htmlspecialchars((string) ($atividadeEdicao['descricao'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" required>
                     </div>
 
-                    <div class="col-md-4 mt-4">
+                    <div class="col-md-3 mt-4">
                         <label for="data_atividade">Data Atividade</label>
-                        <input type="date" class="form-control" id="data_atividade" name="data_atividade" required>
+                        <input type="date" class="form-control" id="data_atividade" name="data_atividade" value="<?= htmlspecialchars((string) ($atividadeEdicao['data_atividade'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" required>
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label for="hora_inicio">Hora Inicio</label>
-                        <input type="time" class="form-control" id="hora_inicio" name="hora_inicio" required>
+                        <input type="time" class="form-control" id="hora_inicio" name="hora_inicio" value="<?= htmlspecialchars((string) ($atividadeEdicao['hora_inicio'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" required>
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label for="hora_fim">Hora Termino</label>
-                        <input type="time" class="form-control" id="hora_fim" name="hora_fim" required>
+                        <input type="time" class="form-control" id="hora_fim" name="hora_fim" value="<?= htmlspecialchars((string) ($atividadeEdicao['hora_fim'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" required>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="local_atividade" class="form-label">Local Atividade</label>
+                        <input type="text" class="form-control" id="local_atividade" name="local_atividade" value="<?= htmlspecialchars((string) ($atividadeEdicao['local_atividade'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" required>
                     </div>
 
                     <div class="col-md-4">
-                        <label for="local_atividade" class="form-label">Local Atividade</label>
-                        <input type="text" class="form-control" id="local_atividade" name="local_atividade" required>
+                        <label for="capacidade" class="form-label">Capacidade</label>
+                        <input type="text" class="form-control" id="capacidade" name="capacidade" value="<?= htmlspecialchars((string) ($atividadeEdicao['capacidade'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" required>
                     </div>
+                </div>
+
+                <div class="mt-4">
+
+                    <button type="submit" class="btn btn-festival">
+                        Cadastrar
+                    </button>
+
+                    <?php if ($modoEdicao): ?>
+                        <a
+                            href="?pagina=atividades"
+                            class="btn btn-outline-secondary ms-2">
+                            Cancelar
+                        </a>
+                    <?php endif; ?>
+
                 </div>
             </form>
         </section>
@@ -152,8 +204,104 @@
                                 </tr>
                             </thead>
 
-                            <tbody>
+                            <tbody id="tabelaAtividades">
+                                <?php if (empty($atividades)): ?>
 
+                                    <tr>
+                                        <td colspan="9" class="text-center py-4">
+                                            Nenhuma atividade cadastrada
+                                        </td>
+                                    </tr>
+
+                                <?php else: ?>
+
+                                    <?php foreach ($atividades as $atividade): ?>
+
+                                        <tr>
+                                            <td class="ps-4">
+                                                <?= (int) $atividade['id_atividade'] ?>
+                                            </td>
+
+                                            <td class="ps-4">
+                                                <?= htmlspecialchars(
+                                                    (string) $atividade['nome_atividade'],
+                                                    ENT_QUOTES,
+                                                    'UTF-8'
+                                                ) ?>
+                                            </td>
+
+                                            <td class="ps-4">
+                                                <?= htmlspecialchars(
+                                                    (string) $atividade['descricao'],
+                                                    ENT_QUOTES,
+                                                    'UTF-8'
+                                                ) ?>
+                                            </td>
+
+                                            <td class="ps-4">
+                                                <?= htmlspecialchars(
+                                                    (string) $atividade['data_atividade'],
+                                                    ENT_QUOTES,
+                                                    'UTF-8'
+                                                ) ?>
+                                            </td>
+
+                                            <td class="ps-4">
+                                                <?= htmlspecialchars(
+                                                    (string) $atividade['hora_inicio'],
+                                                    ENT_QUOTES,
+                                                    'UTF-8'
+                                                ) ?>
+                                            </td>
+
+                                            <td class="ps-4">
+                                                <?= htmlspecialchars(
+                                                    (string) $atividade['hora_fim'],
+                                                    ENT_QUOTES,
+                                                    'UTF-8'
+                                                ) ?>
+                                            </td>
+
+                                            <td class="ps-4">
+                                                <?= htmlspecialchars(
+                                                    (string) $atividade['local_atividade'],
+                                                    ENT_QUOTES,
+                                                    'UTF-8'
+                                                ) ?>
+                                            </td>
+
+                                            <td class="ps-4">
+                                                <?= htmlspecialchars(
+                                                    (string) $atividade['capacidade'],
+                                                    ENT_QUOTES,
+                                                    'UTF-8'
+                                                ) ?>
+                                            </td>
+
+                                            <td>
+                                                <a href="?pagina=atividades&editar=<?= (int) $atividade['id_atividade'] ?>"
+                                                    class="btn btn-outline-secondary btn-sm">
+                                                    <i class="bi bi-pencil"> Editar</i>
+                                                </a>
+
+                                                <form
+                                                    method="POST"
+                                                    action="?pagina=atividades&acao=excluir&id=<?= (int) $atividade['id_atividade'] ?>"
+                                                    class="d-inline"
+                                                    onsubmit="return confirm('Tem certeza de que deseja excluir esta atividade?');">
+
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                        <i class="bi bi-trash me-1" aria-hidden="true"></i>
+                                                        Excluir
+                                                    </button>
+
+                                                </form>
+                                            </td>
+                                        </tr>
+
+                                    <?php endforeach; ?>
+
+                                <?php endif; ?>
                             </tbody>
                         </table>
                     </div>

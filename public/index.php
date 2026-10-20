@@ -233,6 +233,178 @@ if (
         $participantes = $participanteService->listarParticipantes();
     }
 
+    if ($pagina === 'atividades') {
+
+        require __DIR__ . '/../services/AtividadeService.php';
+
+        $atividadeService = new AtividadeService($pdo);
+
+        if (
+            $_SERVER['REQUEST_METHOD'] === 'POST' &&
+            ($_GET['acao'] ?? '') === 'excluir'
+        ) {
+
+            $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+
+            if ($id === false || $id === null || $id <= 0) {
+                header('Location: ?pagina=atividades&status=dados_invalidos');
+                exit;
+            }
+
+            try {
+
+                $resultado = $atividadeService->excluirAtividade($id);
+
+                if ($resultado === 'EXCLUIDO') {
+                    $status = 'excluido';
+                } elseif ($resultado === 'NAO_ENCONTRADO') {
+                    $status = 'atividade_nao_encontrada';
+                } elseif ($resultado === 'POSSUI_INCRICOES') {
+                    $status = 'possui_inscricoes';
+                } elseif ($resultado === 'ERRO_EXCLUIR') {
+                    $status = 'erro_excluir';
+                }
+            } catch (PDOException $e) {
+                $status = 'erro_excluir';
+            }
+
+            header('Location: ?pagina=atividades&status=' . $status);
+            exit;
+        }
+
+        $atividadeEdicao = null;
+
+        if (isset($_GET['editar'])) {
+
+            $id = filter_input(INPUT_GET, 'editar', FILTER_VALIDATE_INT);
+
+            if ($id === false || $id === null || $id <= 0) {
+
+                header('Location: ?pagina=atividades&status=dados_invalidos');
+                exit;
+            }
+
+            $atividadeEdicao = $atividadeService->buscarAtividadePorId($id);
+
+            if ($atividadeEdicao === null) {
+                header('Location: ?pagina=atividades&status=atividade_nao_encontrada');
+                exit;
+            }
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+            $nome_atividade = $_POST['nome_atividade']  ?? null;
+            $descricao = $_POST['descricao']  ?? null;
+            $data_atividade = $_POST['data_atividade']  ?? null;
+            $hora_inicio = $_POST['hora_inicio']  ?? null;
+            $hora_fim = $_POST['hora_fim']  ?? null;
+            $local_atividade = $_POST['local_atividade']  ?? null;
+            $capacidade = $_POST['capacidade']  ?? null;
+
+            $estaEditando  = isset($_GET['editar']);
+
+            if (
+                is_string($capacidade) &&
+                filter_var($capacidade, FILTER_VALIDATE_INT) !== false &&
+                (int) $capacidade <= 0
+            ) {
+                header('Location: ?pagina=atividades&status=capacidade_invalida');
+                exit;
+            }
+
+            if (
+                !is_string($nome_atividade) ||
+                !is_string($descricao) ||
+                !is_string($data_atividade) ||
+                !is_string($hora_inicio) ||
+                !is_string($hora_fim) ||
+                !is_string($local_atividade) ||
+                !is_string($capacidade) ||
+                trim($nome_atividade) === '' ||
+                trim($descricao) === '' ||
+                trim($data_atividade) === '' ||
+                trim($hora_inicio) === '' ||
+                trim($hora_fim) === '' ||
+                trim($local_atividade) === '' ||
+                filter_var($capacidade, FILTER_VALIDATE_INT) === false ||
+                (int) $capacidade <= 0
+            ) {
+                $destino = '?pagina=atividades';
+
+                if ($estaEditando) {
+                    $destino .= '&editar=' . (int) $_GET['editar'];
+                }
+
+                header('Location: ' . $destino . '&status=dados_invalidos');
+                exit;
+            }
+
+            $atividade = new Atividade(
+                trim($nome_atividade),
+                trim($descricao),
+                trim($data_atividade),
+                trim($hora_inicio),
+                trim($hora_fim),
+                trim($local_atividade),
+                trim($capacidade)
+            );
+
+
+            if ($estaEditando) {
+
+                $id = filter_input(INPUT_GET, 'editar', FILTER_VALIDATE_INT);
+
+                if ($id === false || $id === null || $id <= 0) {
+                    header('Location: ?pagina=atividades&status=dados_invalidos');
+                    exit;
+                }
+
+                $resultado = $atividadeService->atualizarAtividade($id, $atividade);
+
+                if ($resultado === 'ATUALIZADA') {
+
+                    header('Location: ?pagina=atividades&status=atualizado');
+                    exit;
+                } elseif ($resultado === 'CAPACIDADE_INVALIDA') {
+
+                    header('Location: ?pagina=atividades&status=capacidade_invalida');
+                    exit;
+                } elseif ($resultado === 'NAO_ENCONTRADO') {
+
+                    header('Location: ?pagina=atividades&status=nao_encontrado');
+                    exit;
+                } elseif ($resultado === 'CAPACIDADE_MENOR_QUE_INSCRITOS') {
+
+                    header('Location: ?pagina=atividades&status=capacidade_menor_inscritos');
+                    exit;
+                } elseif ($resultado === 'ERRO_ATUALIZAR') {
+
+                    header('Location: ?pagina=atividades&status=erro_atualizar');
+                    exit;
+                } else {
+
+                    header('Location: ?pagina=atividades&status=erro_atualizar');
+                    exit;
+                }
+            } else {
+                $resultado = $atividadeService->cadastrarAtividade($atividade);
+
+                if ($resultado === 'CADASTRADA') {
+                    header('Location: ?pagina=atividades&status=cadastrada');
+                    exit;
+                } elseif ($resultado === 'CAPACIDADE_INVALIDA') {
+                    header('Location: ?pagina=atividades&status=capacidade_invalida');
+                    exit;
+                } else {
+                    header('Location: ?pagina=atividades&status=erro_cadastro');
+                    exit;
+                }
+            }
+        }
+
+        $atividades = $atividadeService->listarAtividades();
+    }
 
     // Carrega a página solicitada
     require $paginasPermitidas[$pagina];
