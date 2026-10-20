@@ -168,10 +168,10 @@
                                 id="nome_participante"
                                 name="nome_participante"
                                 value="<?= htmlspecialchars(
-                                                    (string) ($participanteEdicao['nome_participante'] ?? ''),
-                                                    ENT_QUOTES,
-                                                    'UTF-8'
-                                                ) ?>"
+                                            (string) ($participanteEdicao['nome_participante'] ?? ''),
+                                            ENT_QUOTES,
+                                            'UTF-8'
+                                        ) ?>"
                                 required>
                         </div>
 
@@ -204,7 +204,7 @@
                                 id="telefone"
                                 name="telefone"
                                 value="<?= htmlspecialchars(
-                                                (string) ($participanteEdicao['telefone'] ?? ''),
+                                            (string) ($participanteEdicao['telefone'] ?? ''),
                                             ENT_QUOTES,
                                             'UTF-8'
                                         ) ?>"
@@ -309,8 +309,22 @@
                                                 <a
                                                     href="?pagina=participantes&editar=<?= (int) $participante['id_participante'] ?>"
                                                     class="btn btn-outline-secondary btn-sm">
-                                                    Editar
+                                                    <i class="bi bi-pencil"> Editar</i>
+                                                    
                                                 </a>
+
+                                                <form
+                                                    method="POST"
+                                                    action="?pagina=participantes&acao=excluir&id=<?= (int) $participante['id_participante'] ?>"
+                                                    class="d-inline"
+                                                    onsubmit="return confirm('Tem certeza de que deseja excluir este participante?');">
+
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                        <i class="bi bi-trash me-1" aria-hidden="true"></i>
+                                                        Excluir
+                                                    </button>
+
+                                                </form>
                                             </td>
                                         </tr>
 

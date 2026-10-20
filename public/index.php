@@ -78,6 +78,38 @@ if (
 
         $participanteService = new ParticipanteService($pdo);
 
+
+
+        if (
+            $_SERVER['REQUEST_METHOD'] === 'POST' &&
+            ($_GET['acao'] ?? '') === 'excluir'
+        ) {
+            $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+
+            if ($id === false || $id === null || $id <= 0) {
+                header('Location: ?pagina=participantes&status=dados_invalidos');
+                exit;
+            }
+
+            try {
+                $resultado = $participanteService->excluirParticipante($id);
+
+                if ($resultado === 'EXCLUIDO') {
+                    $status = 'excluido';
+                } elseif ($resultado === 'NAO_ENCONTRADO') {
+                    $status = 'participante_nao_encontrado';
+                } else {
+                    $status = 'erro_excluir';
+                }
+            } catch (PDOException $e) {
+                $status = 'erro_excluir';
+            }
+
+            header('Location: ?pagina=participantes&status=' . $status);
+            exit;
+        }
+
+
         $participanteEdicao = null;
 
         if (isset($_GET['editar'])) {
