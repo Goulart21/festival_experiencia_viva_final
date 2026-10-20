@@ -126,19 +126,34 @@
                 Não foi possível cadastrar o participante.
             </div>
 
+        <?php elseif ($statusCadastro === 'atualizado'): ?>
+
+            <div class="alert alert-success" role="alert">
+                Participante atualizado com sucesso!
+            </div>
+
         <?php endif; ?>
 
 
-        <!-- Formulário de cadastro -->
+
+        <?php
+        $modoEdicao = $participanteEdicao !== null;
+        ?>
+
+        <!-- Formulário de cadastro ou edição -->
         <section class="card shadow-sm mb-4" aria-labelledby="tituloCadastro">
 
             <div class="card-body p-4">
 
                 <h2 id="tituloCadastro" class="h5 fw-semibold mb-4">
-                    Cadastrar participante
+                    Cadastrar Participantes
                 </h2>
 
-                <form method="POST" action="?pagina=participantes">
+                <form
+                    method="POST"
+                    action="<?= $modoEdicao
+                                ? '?pagina=participantes&editar=' . (int) ($participanteEdicao['id_participante'] ?? '')
+                                : '?pagina=participantes' ?>">
 
                     <div class="row g-3">
 
@@ -152,6 +167,11 @@
                                 class="form-control"
                                 id="nome_participante"
                                 name="nome_participante"
+                                value="<?= htmlspecialchars(
+                                                    (string) ($participanteEdicao['nome_participante'] ?? ''),
+                                                    ENT_QUOTES,
+                                                    'UTF-8'
+                                                ) ?>"
                                 required>
                         </div>
 
@@ -165,6 +185,11 @@
                                 class="form-control"
                                 id="email"
                                 name="email"
+                                value="<?= htmlspecialchars(
+                                            (string) ($participanteEdicao['email'] ?? ''),
+                                            ENT_QUOTES,
+                                            'UTF-8'
+                                        ) ?>"
                                 required>
                         </div>
 
@@ -178,16 +203,30 @@
                                 class="form-control"
                                 id="telefone"
                                 name="telefone"
+                                value="<?= htmlspecialchars(
+                                                (string) ($participanteEdicao['telefone'] ?? ''),
+                                            ENT_QUOTES,
+                                            'UTF-8'
+                                        ) ?>"
                                 required>
                         </div>
 
                     </div>
 
                     <div class="mt-4">
+
                         <button type="submit" class="btn btn-festival">
-                            <i class="bi bi-person-plus me-1" aria-hidden="true"></i>
-                            Cadastrar participante
+                            Cadastrar
                         </button>
+
+                        <?php if ($modoEdicao): ?>
+                            <a
+                                href="?pagina=participantes"
+                                class="btn btn-outline-secondary ms-2">
+                                Cancelar
+                            </a>
+                        <?php endif; ?>
+
                     </div>
 
                 </form>
@@ -195,6 +234,7 @@
             </div>
 
         </section>
+
 
 
         <section aria-label="Lista de participantes">
@@ -213,6 +253,7 @@
                                     <th scope="col">Nome</th>
                                     <th scope="col">E-mail</th>
                                     <th scope="col">Telefone</th>
+                                    <th scope="col">Ações</th>
                                 </tr>
                             </thead>
 
@@ -222,7 +263,7 @@
                                 <?php if (empty($participantes)): ?>
 
                                     <tr>
-                                        <td colspan="4" class="text-center py-4">
+                                        <td colspan="5" class="text-center py-4">
                                             Nenhum participante cadastrado.
                                         </td>
                                     </tr>
@@ -263,6 +304,14 @@
                                                     'UTF-8'
                                                 ) ?>
                                             </td>
+
+                                            <td>
+                                                <a
+                                                    href="?pagina=participantes&editar=<?= (int) $participante['id_participante'] ?>"
+                                                    class="btn btn-outline-secondary btn-sm">
+                                                    Editar
+                                                </a>
+                                            </td>
                                         </tr>
 
                                     <?php endforeach; ?>
@@ -289,7 +338,7 @@
 
     </main>
 
-    
+
     <script
         src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
