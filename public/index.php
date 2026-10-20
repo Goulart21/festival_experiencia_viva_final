@@ -63,7 +63,8 @@ $pagina = $_GET['pagina'] ?? 'dashboard';
 
 $paginasPermitidas = [
     'dashboard' => __DIR__ . '/../view/dashboard.php',
-    'participantes' => __DIR__ . '/../view/participantes/index.php'
+    'participantes' => __DIR__ . '/../view/participantes/index.php',
+    'atividades' => __DIR__ . '/../view/atividades/index.php'
 ];
 
 if (
