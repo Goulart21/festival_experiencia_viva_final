@@ -78,14 +78,35 @@ if (
 
         $participanteService = new ParticipanteService($pdo);
 
-        // Processa o envio do formulário.
+        $participanteEdicao = null;
+
+        if (isset($_GET['editar'])) {
+
+            $id = filter_input(INPUT_GET, 'editar', FILTER_VALIDATE_INT);
+
+            if ($id === false || $id === null || $id <= 0) {
+                header('Location: ?pagina=participantes&status=dados_invalidos');
+                exit;
+            }
+
+            $participanteEdicao =
+                $participanteService->buscarParticipantePorId($id);
+
+            if ($participanteEdicao === null) {
+                header('Location: ?pagina=participantes&status=participante_nao_encontrado');
+                exit;
+            }
+        }
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $nome = $_POST['nome_participante'] ?? null;
             $email = $_POST['email'] ?? null;
             $telefone = $_POST['telefone'] ?? null;
 
-            // Valida os campos recebidos.
+            $estaEditando = isset($_GET['editar']);
+
+            // Valida os dados recebidos.
             if (
                 !is_string($nome) ||
                 !is_string($email) ||
@@ -95,7 +116,13 @@ if (
                 trim($telefone) === '' ||
                 !filter_var(trim($email), FILTER_VALIDATE_EMAIL)
             ) {
-                header('Location: ?pagina=participantes&status=dados_invalidos');
+                $destino = '?pagina=participantes';
+
+                if ($estaEditando) {
+                    $destino .= '&editar=' . (int) $_GET['editar'];
+                }
+
+                header('Location: ' . $destino . '&status=dados_invalidos');
                 exit;
             }
 
@@ -106,26 +133,69 @@ if (
             );
 
             try {
-                $resultado = $participanteService->cadastrarParticipante(
-                    $participante
-                );
 
-                if ($resultado === 'SUCESSO') {
-                    $status = 'sucesso';
-                } elseif ($resultado === 'EMAIL_DUPLICADO') {
-                    $status = 'email_duplicado';
+                if ($estaEditando) {
+
+                    $id = filter_input(INPUT_GET, 'editar', FILTER_VALIDATE_INT);
+
+                    if ($id === false || $id === null || $id <= 0) {
+                        header('Location: ?pagina=participantes&status=dados_invalidos');
+                        exit;
+                    }
+
+                    $resultado = $participanteService->atualizarParticipante(
+                        $id,
+                        $participante
+                    );
+
+                    if ($resultado === 'ATUALIZADO') {
+
+                        header('Location: ?pagina=participantes&status=atualizado');
+                        exit;
+                    } elseif ($resultado === 'EMAIL_DUPLICADO') {
+
+                        header(
+                            'Location: ?pagina=participantes&editar='
+                                . $id
+                                . '&status=email_duplicado'
+                        );
+                        exit;
+                    } elseif ($resultado === 'NAO_ENCONTRADO') {
+
+                        header('Location: ?pagina=participantes&status=participante_nao_encontrado');
+                        exit;
+                    } else {
+
+                        header(
+                            'Location: ?pagina=participantes&editar='
+                                . $id
+                                . '&status=erro'
+                        );
+                        exit;
+                    }
                 } else {
-                    $status = 'erro';
+
+                    $resultado = $participanteService->cadastrarParticipante(
+                        $participante
+                    );
+
+                    if ($resultado === 'SUCESSO') {
+                        $status = 'sucesso';
+                    } elseif ($resultado === 'EMAIL_DUPLICADO') {
+                        $status = 'email_duplicado';
+                    } else {
+                        $status = 'erro';
+                    }
+
+                    header('Location: ?pagina=participantes&status=' . $status);
+                    exit;
                 }
             } catch (PDOException $e) {
-                $status = 'erro';
+
+                header('Location: ?pagina=participantes&status=erro');
+                exit;
             }
-
-            // Redireciona após o processamento do formulário.
-            header('Location: ?pagina=participantes&status=' . $status);
-            exit;
         }
-
         // Busca os participantes para renderizar a tabela.
         $participantes = $participanteService->listarParticipantes();
     }
