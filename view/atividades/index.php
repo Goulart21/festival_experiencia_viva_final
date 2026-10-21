@@ -105,8 +105,14 @@
 
         <?php elseif ($statusCadastro === 'excluido'): ?>
             <div class="alert alert-danger" role="alert">
-                Atividade excluida 
+                Atividade excluida
             </div>
+
+        <?php elseif ($statusCadastro === 'capacidade_invalida'): ?>
+            <div class="alert alert-danger" role="alert">
+                Capacidade Inv
+            </div>
+
         <?php endif; ?>
 
         <?php $modoEdicao = $atividadeEdicao !== null; ?>
