@@ -110,7 +110,7 @@
 
         <?php elseif ($statusCadastro === 'capacidade_invalida'): ?>
             <div class="alert alert-danger" role="alert">
-                Capacidade Inv
+                Capacidade Inválida
             </div>
 
         <?php endif; ?>
