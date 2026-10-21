@@ -407,7 +407,85 @@ if (
         $atividades = $atividadeService->listarAtividades();
     }
 
-    // Carrega a página solicitada
+    if ($pagina === 'inscricoes') {
+
+        require_once __DIR__ . '/../services/InscricaoService.php';
+        require_once __DIR__ . '/../services/ParticipanteService.php';
+        require_once __DIR__ . '/../services/AtividadeService.php';
+
+        $inscricaoService = new InscricaoService($pdo);
+        $atividadeService = new AtividadeService($pdo);
+        $participanteService = new ParticipanteService($pdo);
+
+        if (
+            $_SERVER['REQUEST_METHOD'] === 'POST' &&
+            ($_GET['acao'] ?? '') === 'cancelar'
+        ) {
+            $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+
+            if ($id === false || $id === null || $id <= 0) {
+                header('Location: ?pagina=inscricoes&status=dados_invalidos');
+                exit;
+            }
+
+            $resultado = $inscricaoService->cancelarInscricao($id);
+
+            if ($resultado === 'CANCELADA') {
+                $status = 'cancelada';
+            } elseif ($resultado === 'NAO_ENCONTRADO') {
+                $status = 'inscricao_nao_encontrada';
+            } elseif ($resultado === 'JA_CANCELADA') {
+                $status = 'ja_cancelada';
+            } else {
+                $status = 'erro_cancelar';
+            }
+
+            header('Location: ?pagina=inscricoes&status=' . $status);
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+            $id_participante = filter_input(INPUT_POST, 'nome_participante', FILTER_VALIDATE_INT);
+            $id_atividade = filter_input(INPUT_POST, 'nome_atividade', FILTER_VALIDATE_INT);
+
+            if (
+                $id_participante === false || $id_participante === null || $id_participante <= 0 ||
+                $id_atividade === false || $id_atividade === null || $id_atividade <= 0
+            ) {
+                header('Location: ?pagina=inscricoes&status=dados_invalidos');
+                exit;
+            }
+
+            $inscricao = new Inscricao($id_participante, $id_atividade);
+
+            $resultado = $inscricaoService->cadastrarInscricao($inscricao);
+
+            if ($resultado === 'CADASTRADA') {
+                $status = 'cadastrada';
+            } elseif ($resultado === 'REATIVADA') {
+                $status = 'reativada';
+            } elseif ($resultado === 'INSCRICAO_DUPLICADA') {
+                $status = 'inscricao_duplicada';
+            } elseif ($resultado === 'ATIVIDADE_SEM_VAGAS') {
+                $status = 'atividade_sem_vagas';
+            } elseif ($resultado === 'PARTICIPANTE_NAO_ENCONTRADO') {
+                $status = 'participante_nao_encontrado';
+            } elseif ($resultado === 'ATIVIDADE_NAO_ENCONTRADA') {
+                $status = 'atividade_nao_encontrada';
+            } else {
+                $status = 'erro_cadastro';
+            }
+
+            header('Location: ?pagina=inscricoes&status=' . $status);
+            exit;
+        }
+
+        $inscricoes = $inscricaoService->listarInscricoes();
+        $participantes = $participanteService->listarParticipantes();
+        $atividades = $atividadeService->listarAtividades();
+    }
+   
     require $paginasPermitidas[$pagina];
 } else {
 
