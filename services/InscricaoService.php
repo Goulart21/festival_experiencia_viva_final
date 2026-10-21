@@ -3,8 +3,8 @@
 <?php
 
 require_once __DIR__ . '/../models/Inscricao.php';
-require __DIR__ . '/../models/Atividade.php';
-require __DIR__ . '/../models/Participante.php';
+require_once __DIR__ . '/../models/Atividade.php';
+require_once __DIR__ . '/../models/Participante.php';
 
 class InscricaoService
 {
