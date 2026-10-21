@@ -310,7 +310,7 @@
                                                     href="?pagina=participantes&editar=<?= (int) $participante['id_participante'] ?>"
                                                     class="btn btn-outline-secondary btn-sm">
                                                     <i class="bi bi-pencil"> Editar</i>
-                                                    
+
                                                 </a>
 
                                                 <form
@@ -352,6 +352,15 @@
 
     </main>
 
+    <footer class="border-top mt-5 pt-4 text-center">
+
+        <p class="small text-secondary">
+            Festival Experiência Viva
+            <span class="p-1">·</span>
+            Sistema de gerenciamento de inscrições
+        </p>
+
+    </footer>
 
     <script
         src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
