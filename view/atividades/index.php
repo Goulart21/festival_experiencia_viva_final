@@ -104,7 +104,7 @@
             </div>
 
         <?php elseif ($statusCadastro === 'excluido'): ?>
-            <div class="alert alert-success" role="alert">
+            <div class="alert alert-danger" role="alert">
                 Atividade excluida 
             </div>
         <?php endif; ?>
