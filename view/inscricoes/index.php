@@ -1,3 +1,9 @@
+<?php
+
+/** @var array $participantes */
+/** @var array $atividades */
+/** @var array $inscricoes */
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -78,6 +84,69 @@
         <p>Consulte inscrições cadastras no festival</p>
     </section>
 
+    <?php $statusCadastro = $_GET['status'] ?? ''; ?>
+
+    <?php if ($statusCadastro === 'cadastrada'): ?>
+        <div class="alert alert-success" role="alert">
+            Inscrição cadastrada com sucesso!
+        </div>
+
+    <?php elseif ($statusCadastro === 'reativada'): ?>
+        <div class="alert alert-success" role="alert">
+            Inscrição reativada com sucesso!
+        </div>
+
+    <?php elseif ($statusCadastro === 'cancelada'): ?>
+        <div class="alert alert-danger" role="alert">
+            Inscrição cancelada
+        </div>
+
+    <?php elseif ($statusCadastro === 'inscricao_duplicada'): ?>
+        <div class="alert alert-danger" role="alert">
+            Este participante já está inscrito nesta atividade.
+        </div>
+
+    <?php elseif ($statusCadastro === 'atividade_sem_vagas'): ?>
+        <div class="alert alert-danger" role="alert">
+            Esta atividade não possui mais vagas.
+        </div>
+
+    <?php elseif ($statusCadastro === 'participante_nao_encontrado'): ?>
+        <div class="alert alert-danger" role="alert">
+            Participante não encontrado.
+        </div>
+
+    <?php elseif ($statusCadastro === 'atividade_nao_encontrada'): ?>
+        <div class="alert alert-danger" role="alert">
+            Atividade não encontrada.
+        </div>
+
+    <?php elseif ($statusCadastro === 'dados_invalidos'): ?>
+        <div class="alert alert-danger" role="alert">
+            Dados inválidos. Selecione o participante e a atividade.
+        </div>
+
+    <?php elseif ($statusCadastro === 'erro_cadastro'): ?>
+        <div class="alert alert-danger" role="alert">
+            Não foi possível cadastrar a inscrição.
+        </div>
+
+    <?php elseif ($statusCadastro === 'inscricao_nao_encontrada'): ?>
+        <div class="alert alert-danger" role="alert">
+            Inscrição não encontrada.
+        </div>
+
+    <?php elseif ($statusCadastro === 'ja_cancelada'): ?>
+        <div class="alert alert-danger" role="alert">
+            Esta inscrição já está cancelada.
+        </div>
+
+    <?php elseif ($statusCadastro === 'erro_cancelar'): ?>
+        <div class="alert alert-danger" role="alert">
+            Não foi possível cancelar a inscrição.
+        </div>
+
+    <?php endif; ?>
     <section class="card shadow-sm mb-4" aria-labelledby="tituloCadastro">
 
         <div class="card-body p-4">
@@ -87,29 +156,47 @@
             </h2>
         </div>
 
-        <form method="post" class="p-4">
+        <form method="POST" class="p-4">
 
             <div class="row g-3">
 
                 <div class="col-md-6">
                     <label for="nome_participante" class="form-label">Nome participante</label>
-                    <select class="form-select" aria-label="Default select example">
-                        <option selected>Selecione o participante</option>
-                        <option value="1">One</option>
-                        <option value="2">Two</option>
-                        <option value="3">Three</option>
+                    <select name="nome_participante" id="nome_participante" class="form-select" required>
+                        <option value="">Selecione o participante</option>
+
+                        <?php foreach ($participantes as $participante): ?>
+                            <option value="<?= (int) $participante['id_participante'] ?>">
+                                <?= htmlspecialchars(
+                                    (string) $participante['nome_participante'],
+                                    ENT_QUOTES,
+                                    'UTF-8'
+                                ) ?>
+                            </option>
+                        <?php endforeach; ?>
                     </select>
+
+
                 </div>
 
 
                 <div class="col-md-6">
                     <label for="nome_atividade" class="form-label">Nome atividade</label>
-                    <select class="form-select" aria-label="Default select example">
-                        <option selected>Selecione a atividade</option>
-                        <option value="1">One</option>
-                        <option value="2">Two</option>
-                        <option value="3">Three</option>
+
+                    <select name="nome_atividade" id="nome_atividade" class="form-select" required>
+                        <option value="">Selecione a atividade</option>
+
+                        <?php foreach ($atividades as $atividade): ?>
+                            <option value="<?= (int) $atividade['id_atividade'] ?>">
+                                <?= htmlspecialchars(
+                                    (string) $atividade['nome_atividade'],
+                                    ENT_QUOTES,
+                                    'UTF-8'
+                                ) ?>
+                            </option>
+                        <?php endforeach; ?>
                     </select>
+
                 </div>
             </div>
 
@@ -128,32 +215,95 @@
 
             <div class="card-body">
 
-                <table class="table table-hover">
+                <div class="table-responsive">
 
-                    <thead class="table-ligth">
-                        <tr>
-                            <th scope="col" class="ps-4">ID</th>
-                            <th scope="col" class="ps-4">Nome Participante</th>
-                            <th scope="col" class="ps-4">Nome Atividade</th>
-                            <th scope="col" class="ps-4">Status</th>
-                            <th scope="col" class="ps-4">Ações</th>
-                        </tr>
-                    </thead>
+                    <table class="table table-hover">
+
+                        <thead class="table-ligth">
+                            <tr>
+                                <th scope="col" class="ps-4">ID</th>
+                                <th scope="col" class="ps-4">Nome Participante</th>
+                                <th scope="col" class="ps-4">Nome Atividade</th>
+                                <th scope="col" class="ps-4">Status</th>
+                                <th scope="col" class="ps-4">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaInscricoes">
+
+                            <?php if (empty($inscricoes)): ?>
+
+                                <tr>
+                                    <td colspan="5" class="text-center py-4">
+                                        Nenhuma inscrição cadastrada.
+                                    </td>
+                                </tr>
+
+                            <?php else: ?>
+
+                                <?php foreach ($inscricoes as $inscricao): ?>
+
+                                    <tr>
+                                        <td class="ps-4">
+                                            <?= (int) $inscricao['id_inscricao'] ?>
+                                        </td>
+
+                                        <td class="ps-4">
+                                            <?= htmlspecialchars(
+                                                (string) $inscricao['nome_participante'],
+                                                ENT_QUOTES,
+                                                'UTF-8'
+                                            ) ?>
+                                        </td>
+
+                                        <td class="ps-4">
+                                            <?= htmlspecialchars(
+                                                (string) $inscricao['nome_atividade'],
+                                                ENT_QUOTES,
+                                                'UTF-8'
+                                            ) ?>
+                                        </td>
+
+                                        <td class="ps-4">
+                                            <?= htmlspecialchars(
+                                                (string) $inscricao['status'],
+                                                ENT_QUOTES,
+                                                'UTF-8'
+                                            ) ?>
+                                        </td>
+
+                                        <td class="ps-4">
+                                            <?php if ($inscricao['status'] === 'ATIVA'): ?>
+                                                <form
+                                                    method="POST"
+                                                    action="?pagina=inscricoes&acao=cancelar&id=<?= (int) $inscricao['id_inscricao'] ?>"
+                                                    class="d-inline"
+                                                    onsubmit="return confirm('Tem certeza de que deseja cancelar esta inscrição?');">
+
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                        <i class="bi bi-x-circle me-1" aria-hidden="true"></i>
+                                                        Cancelar
+                                                    </button>
+
+                                                </form>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+
+                                <?php endforeach; ?>
+
+                            <?php endif; ?>
+
+                        </tbody>
+                </div>
                 </table>
-
-                <tbody id="tabelaInscricoes">
-
-                </tbody>
             </div>
         </div>
     </section>
 </main>
 
 <body>
-
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
-<script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </html>
