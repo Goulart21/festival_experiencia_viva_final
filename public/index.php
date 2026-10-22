@@ -66,7 +66,7 @@ $paginasPermitidas = [
     'participantes' => __DIR__ . '/../view/participantes/index.php',
     'atividades' => __DIR__ . '/../view/atividades/index.php',
     'inscricoes' => __DIR__ . '/../view/inscricoes/index.php',
-    'principal' => __DIR__ . '/../view/principal.html'
+    'principal' => __DIR__ . '/../view/principal.php'
 ];
 
 if (
@@ -74,6 +74,16 @@ if (
     is_file($paginasPermitidas[$pagina])
 ) {
 
+    if ($pagina === 'dashboard') {
+
+        require_once __DIR__ . '/../services/DashboardService.php';
+
+        $dashboardService = new DashboardService($pdo);
+
+        $totais = $dashboardService->obterTotais();
+        $ocupacaoAtividades = $dashboardService->listarOcupacaoAtividades();
+        $ultimasInscricoes = $dashboardService->listarUltimasInscricoes();
+    }
 
     if ($pagina === 'participantes') {
 
@@ -486,7 +496,7 @@ if (
         $participantes = $participanteService->listarParticipantes();
         $atividades = $atividadeService->listarAtividades();
     }
-   
+
     require $paginasPermitidas[$pagina];
 } else {
 
