@@ -65,7 +65,8 @@ $paginasPermitidas = [
     'dashboard' => __DIR__ . '/../view/dashboard.php',
     'participantes' => __DIR__ . '/../view/participantes/index.php',
     'atividades' => __DIR__ . '/../view/atividades/index.php',
-    'inscricoes' => __DIR__ . '/../view/inscricoes/index.php'
+    'inscricoes' => __DIR__ . '/../view/inscricoes/index.php',
+    'principal' => __DIR__ . '/../view/principal.php'
 ];
 
 if (
