@@ -35,6 +35,15 @@
             <div class="collapse navbar-collapse" id="navbarNav">
 
                 <div class="navbar-nav ms-auto">
+
+                    <a
+                        class="nav-link"
+                        href="?pagina=principal"
+                        aria-current="page">
+                        <i class="bi-house-door"></i>
+                        Principal
+                    </a>
+                    
                     <a
                         class="nav-link"
                         href="?pagina=dashboard">

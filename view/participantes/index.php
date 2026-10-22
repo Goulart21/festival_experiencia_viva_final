@@ -27,12 +27,14 @@
             style="background-color: var(--festival-verde);">
             <div class="container-fluid">
 
+
                 <h1 class="navbar-brand fw-semibold mt-2">Experiência Viva</h1>
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Alternar navegação">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
+                <!-- Links da navegação -->
                 <div
                     class="collapse navbar-collapse"
                     id="navbarNav">
@@ -40,15 +42,24 @@
 
                         <a
                             class="nav-link"
-                            href="?pagina=dashboard">
+                            href="?pagina=principal"
+                            aria-current="page">
+                            <i class="bi-house-door"></i>
+                            Principal
+                        </a>
+
+
+                        <a
+                            class="nav-link"
+                            href="?pagina=dashboard"
+                            aria-current="page">
                             <i class="bi bi-grid-1x2 me-1" aria-hidden="true"></i>
                             Visão geral
                         </a>
 
                         <a
                             class="nav-link active"
-                            href="?pagina=participantes"
-                            aria-current="page">
+                            href="?pagina=participantes">
                             <i class="bi bi-people me-1" aria-hidden="true"></i>
                             Participantes
                         </a>
